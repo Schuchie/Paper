@@ -2,16 +2,28 @@ name: Sync Fork
 
 on:
   schedule:
-    - cron: '0 0 * * 1'
-  workflow_dispatch: # on button click
+    - cron:  '0 7 * * 1'
+    # scheduled at 07:00 every Monday and Thursday
+  workflow_dispatch:
 
 jobs:
-  sync:
+  sync_with_upstream:
     runs-on: ubuntu-latest
+    name: Sync master with upstream latest
+
     steps:
-      - uses: tgymnich/fork-sync@v1.3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          owner: $current_repo_owner
-          base: master
-          head: master
+    - name: Checkout master
+      uses: actions/checkout@v2
+      with:
+        ref: master
+        
+    - name: Pull upstream changes
+      id: sync
+      uses: aormsby/Fork-Sync-With-Upstream-action@v2.2
+      with:
+        upstream_repository: PaperMC/Paper
+        upstream_branch: master
+        target_branch: master
+
+    - name: Timestamp
+      run: date
