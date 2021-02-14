@@ -16,4 +16,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           owner: Schuchie
           base: master
-          head: PaperMC:master
+          head: master
