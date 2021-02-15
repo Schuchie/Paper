@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Schuchie <nils@schuch.to>
+Date: Mon, 15 Feb 2021 01:05:43 +0100
+Subject: [PATCH] Added Generate Chunks Gamerule to API
+
+
+diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
+index 720fe9f51753be28633ea380e732f676b3be4315..b144823f11a65e34c97b81cb9aaa14911acf5c77 100644
+--- a/src/main/java/org/bukkit/GameRule.java
++++ b/src/main/java/org/bukkit/GameRule.java
+@@ -113,6 +113,11 @@ public final class GameRule<T> {
+      */
+     public static final GameRule<Boolean> SHOW_DEATH_MESSAGES = new GameRule<>("showDeathMessages", Boolean.class);
+ 
++    /**
++     * Whether players can generate chunks.
++     */
++    public static final GameRule<Boolean> GENERATE_CHUNKS = new GameRule<>("generateChunks", Boolean.class);
++
+     /**
+      * Whether players in spectator mode can generate chunks.
+      */

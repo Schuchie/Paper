@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Schuchie <nils@schuch.to>
+Date: Mon, 15 Feb 2021 01:04:03 +0100
+Subject: [PATCH] Added Generate Chunks Gamerule to Server
+
+
+diff --git a/src/main/java/net/minecraft/server/GameRules.java b/src/main/java/net/minecraft/server/GameRules.java
+index 53b40f8947c9380ef57ecc7edca203c5bc894013..2efc4414bce975f01f2de2e1ef27523474396bb2 100644
+--- a/src/main/java/net/minecraft/server/GameRules.java
++++ b/src/main/java/net/minecraft/server/GameRules.java
+@@ -51,6 +51,7 @@ public class GameRules {
+         }
+ 
+     }));
++    public static final GameRules.GameRuleKey<GameRules.GameRuleBoolean> GENERATE_CHUNKS = a("generateChunks", GameRules.GameRuleCategory.PLAYER, GameRules.GameRuleBoolean.b(false));
+     public static final GameRules.GameRuleKey<GameRules.GameRuleBoolean> SPECTATORS_GENERATE_CHUNKS = a("spectatorsGenerateChunks", GameRules.GameRuleCategory.PLAYER, GameRules.GameRuleBoolean.b(true));
+     public static final GameRules.GameRuleKey<GameRules.GameRuleInt> SPAWN_RADIUS = a("spawnRadius", GameRules.GameRuleCategory.PLAYER, GameRules.GameRuleInt.b(10));
+     public static final GameRules.GameRuleKey<GameRules.GameRuleBoolean> DISABLE_ELYTRA_MOVEMENT_CHECK = a("disableElytraMovementCheck", GameRules.GameRuleCategory.PLAYER, GameRules.GameRuleBoolean.b(false));
+diff --git a/src/main/java/net/minecraft/server/PlayerChunkMap.java b/src/main/java/net/minecraft/server/PlayerChunkMap.java
+index 49008cdec739b19409fdaf1b0ed806a6c0e93200..6aa6bcab1c22a13706747b3cadee51a3614d8a24 100644
+--- a/src/main/java/net/minecraft/server/PlayerChunkMap.java
++++ b/src/main/java/net/minecraft/server/PlayerChunkMap.java
+@@ -1799,7 +1799,7 @@ public class PlayerChunkMap extends IChunkLoader implements PlayerChunk.d {
+ 
+     private boolean cannotLoadChunks(EntityPlayer entityplayer) { return this.b(entityplayer); } // Paper - OBFHELPER
+     private boolean b(EntityPlayer entityplayer) {
+-        return entityplayer.isSpectator() && !this.world.getGameRules().getBoolean(GameRules.SPECTATORS_GENERATE_CHUNKS);
++        return !this.world.getGameRules().getBoolean(GameRules.GENERATE_CHUNKS) || (entityplayer.isSpectator() && !this.world.getGameRules().getBoolean(GameRules.SPECTATORS_GENERATE_CHUNKS));
+     }
+ 
+     void a(EntityPlayer entityplayer, boolean flag) {
