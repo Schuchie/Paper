@@ -5,7 +5,7 @@ Subject: [PATCH] Add API for quit reason
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 7e5e4acb3c892a5d366e0fbfb76b97884345ec24..d58abb47c1a543eaf238569f27bf189322c22a93 100644
+index 8436b7be989bf08c8ec1f0d646b20e777a0ebd55..3728ff515feea7fd6fe8c62c0e6646e8a8662beb 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -130,6 +130,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -37,10 +37,10 @@ index fc4ad72ffaed5e747cfecc71e9ac8ee2b556ce31..fb1e3c705b8abee13695762cdfd0e9f1
                          NetworkManager.LOGGER.debug("Failed to sent packet", throwable);
                          this.sendPacket(new PacketPlayOutKickDisconnect(chatmessage), (future) -> {
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 0f27428757b1827a625a25ea8f6435882f7b5f8a..54b109777c4383cfb4bef8f8ea8e4a9f1cbc9c7c 100644
+index 2ca65ad26155ee168b51db52568d207c92a5d137..8591cd6636f6c1f9cb4fd66618afe63592cec482 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -298,6 +298,7 @@ public class PlayerConnection implements PacketListenerPlayIn {
+@@ -302,6 +302,7 @@ public class PlayerConnection implements PacketListenerPlayIn {
          final IChatBaseComponent ichatbasecomponent = PaperAdventure.asVanilla(event.reason()); // Paper - Adventure
          // CraftBukkit end
  
@@ -49,15 +49,15 @@ index 0f27428757b1827a625a25ea8f6435882f7b5f8a..54b109777c4383cfb4bef8f8ea8e4a9f
              this.networkManager.close(ichatbasecomponent);
          });
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 9080f28d8c8ce20ea9934384bd14932145c64de0..c074f0b451b5bbaab977a7512045a6da9399ed32 100644
+index 24b28c547555ece196befb041025ae72b6ee7c81..2837b2c3b72a22da70ca7123715c83b4d6e701be 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -511,7 +511,7 @@ public abstract class PlayerList {
+@@ -512,7 +512,7 @@ public abstract class PlayerList {
              entityplayer.closeInventory(org.bukkit.event.inventory.InventoryCloseEvent.Reason.DISCONNECT); // Paper
          }
  
--        PlayerQuitEvent playerQuitEvent = new PlayerQuitEvent(cserver.getPlayer(entityplayer), net.kyori.adventure.text.Component.translatable("multiplayer.player.left", net.kyori.adventure.text.format.NamedTextColor.YELLOW));
-+        PlayerQuitEvent playerQuitEvent = new PlayerQuitEvent(cserver.getPlayer(entityplayer), net.kyori.adventure.text.Component.translatable("multiplayer.player.left", net.kyori.adventure.text.format.NamedTextColor.YELLOW), entityplayer.quitReason); // Paper - quit reason
+-        PlayerQuitEvent playerQuitEvent = new PlayerQuitEvent(cserver.getPlayer(entityplayer), net.kyori.adventure.text.Component.translatable("multiplayer.player.left", net.kyori.adventure.text.format.NamedTextColor.YELLOW, com.destroystokyo.paper.PaperConfig.useDisplayNameInQuit ? entityplayer.getBukkitEntity().displayName() : net.kyori.adventure.text.Component.text(entityplayer.getName())));
++        PlayerQuitEvent playerQuitEvent = new PlayerQuitEvent(cserver.getPlayer(entityplayer), net.kyori.adventure.text.Component.translatable("multiplayer.player.left", net.kyori.adventure.text.format.NamedTextColor.YELLOW, com.destroystokyo.paper.PaperConfig.useDisplayNameInQuit ? entityplayer.getBukkitEntity().displayName() : net.kyori.adventure.text.Component.text(entityplayer.getName())), entityplayer.quitReason); // Paper - quit reason
          if (entityplayer.didPlayerJoinEvent) cserver.getPluginManager().callEvent(playerQuitEvent); // Paper - if we disconnected before join ever fired, don't fire quit
          entityplayer.getBukkitEntity().disconnect(playerQuitEvent.getQuitMessage());
  

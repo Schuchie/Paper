@@ -7,38 +7,62 @@ Co-authored-by: zml <zml@stellardrift.ca>
 Co-authored-by: Jake Potrebic <jake.m.potrebic@gmail.com>
 
 diff --git a/pom.xml b/pom.xml
-index 58fc279186e01a4703102227f387e96272fcf0a7..a6565a93848213a39694dc84be75aebcc327b1b8 100644
+index 58fc279186e01a4703102227f387e96272fcf0a7..efcd00a8f25a9e82512b090f54a337fed734dfb5 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -49,6 +49,28 @@
+@@ -48,7 +48,39 @@
+         </pluginRepository>
      </pluginRepositories>
  
++    <!-- Paper start -->
++    <dependencyManagement>
++        <dependencies>
++            <dependency>
++                <groupId>net.kyori</groupId>
++                <artifactId>adventure-bom</artifactId>
++                <version>4.5.1</version> <!-- keep this version in synch with javadoc section below! -->
++                <type>pom</type>
++                <scope>import</scope>
++            </dependency>
++        </dependencies>
++    </dependencyManagement>
++    <!-- Paper end -->
++
      <dependencies>
 +        <!-- Paper start -->
 +        <dependency>
 +            <groupId>net.kyori</groupId>
 +            <artifactId>adventure-api</artifactId>
-+            <version>4.4.0</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.kyori</groupId>
 +            <artifactId>adventure-text-serializer-gson</artifactId>
-+            <version>4.4.0</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.kyori</groupId>
 +            <artifactId>adventure-text-serializer-legacy</artifactId>
-+            <version>4.4.0</version>
 +        </dependency>
 +        <dependency>
 +            <groupId>net.kyori</groupId>
 +            <artifactId>adventure-text-serializer-plain</artifactId>
-+            <version>4.4.0</version>
 +        </dependency>
 +        <!-- Paper end -->
          <dependency>
              <groupId>it.unimi.dsi</groupId>
              <artifactId>fastutil</artifactId>
+@@ -215,6 +247,12 @@
+                         <link>https://javadoc.io/doc/org.yaml/snakeyaml/1.27/</link>
+                         <link>https://javadoc.io/doc/org.jetbrains/annotations-java5/20.1.0/</link>
+                         <link>https://javadoc.io/doc/net.md-5/bungeecord-chat/1.16-R0.4/</link>
++                        <!-- Paper start -->
++                        <link>https://jd.adventure.kyori.net/api/4.5.1/</link>
++                        <link>https://jd.adventure.kyori.net/text-serializer-gson/4.5.1/</link>
++                        <link>https://jd.adventure.kyori.net/text-serializer-legacy/4.5.1/</link>
++                        <link>https://jd.adventure.kyori.net/text-serializer-plain/4.5.1/</link>
++                        <!-- Paper end -->
+                     </links>
+                 </configuration>
+             </plugin>
 diff --git a/src/main/java/co/aikar/timings/TimingsReportListener.java b/src/main/java/co/aikar/timings/TimingsReportListener.java
 index ef58a6c00f444bd498a2d8fc4e457236f393954f..ecd149157d4fb80444f34bf5633d74bcdb63dec5 100644
 --- a/src/main/java/co/aikar/timings/TimingsReportListener.java
@@ -551,6 +575,32 @@ index a6b9e4f158583e5932bf8ca210d531857e9f5360..d9515a79dc7ed60c66960cd6c6bb4c10
          public void broadcast(@NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
              throw new UnsupportedOperationException("Not supported yet.");
          }
+diff --git a/src/main/java/org/bukkit/Sound.java b/src/main/java/org/bukkit/Sound.java
+index 768f35c19c4557236bded5f4a85f48a2b2b2a9e6..d0ce64412276512cde133937a85a3340a70eea6d 100644
+--- a/src/main/java/org/bukkit/Sound.java
++++ b/src/main/java/org/bukkit/Sound.java
+@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
+  * guarantee values will not be removed from this Enum. As such, you should not
+  * depend on the ordinal values of this class.
+  */
+-public enum Sound implements Keyed {
++public enum Sound implements Keyed, net.kyori.adventure.sound.Sound.Type { // Paper - implement Sound.Type
+ 
+     AMBIENT_BASALT_DELTAS_ADDITIONS("ambient.basalt_deltas.additions"),
+     AMBIENT_BASALT_DELTAS_LOOP("ambient.basalt_deltas.loop"),
+@@ -1016,4 +1016,12 @@ public enum Sound implements Keyed {
+     public NamespacedKey getKey() {
+         return key;
+     }
++
++    // Paper start
++    @NotNull
++    @Override
++    public net.kyori.adventure.key.@org.checkerframework.checker.nullness.qual.NonNull Key key() {
++        return this.key;
++    }
++    // Paper end
+ }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
 index b8a33ac504da73ec990550bdd23e4548f6ccba95..27faaf8d1101f8522b728e3d73833e4dddbf1715 100644
 --- a/src/main/java/org/bukkit/World.java
@@ -845,7 +895,7 @@ index 344c14a5ed86e9ebe401bfb5ba3aedc0c0ed0b04..41a1bc45cc5eb7f19374115ade7f5328
 +    // Paper end
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1de06d972 100644
+index 0e05b09fc05ccd0a5dabb658dc62e336b204a127..e4d1d95dda8cdefb9056aa688bd8507602502dd0 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -30,7 +30,28 @@ import org.jetbrains.annotations.Nullable;
@@ -888,7 +938,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      @NotNull
      public String getDisplayName();
  
-@@ -52,15 +75,51 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -52,15 +75,50 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * places defined by plugins.
       *
       * @param name The new display name.
@@ -908,9 +958,9 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
 +    void playerListName(@Nullable net.kyori.adventure.text.Component name);
 +
 +    /**
-+     * Gets the currently displayed player list header for this player.
++     * Gets the name that is shown on the in-game player list.
 +     *
-+     * @return player list header or null
++     * @return the player list name
 +     */
 +    @Nullable net.kyori.adventure.text.Component playerListName();
 +
@@ -918,14 +968,13 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
 +     * Gets the currently displayed player list header for this player.
 +     *
 +     * @return player list header or null
-+     * @deprecated in favour of {@link #playerListName()}
 +     */
 +    @Nullable net.kyori.adventure.text.Component playerListHeader();
 +
 +    /**
 +     * Gets the currently displayed player list footer for this player.
 +     *
-+     * @return player list header or null
++     * @return player list footer or null
 +     */
 +    @Nullable net.kyori.adventure.text.Component playerListFooter();
 +    // Paper end
@@ -940,7 +989,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      public String getPlayerListName();
  
      /**
-@@ -69,14 +128,18 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -69,14 +127,18 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * If the value is null, the name will be identical to {@link #getName()}.
       *
       * @param name new player list name
@@ -959,7 +1008,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      @Nullable
      public String getPlayerListHeader();
  
-@@ -84,7 +147,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -84,7 +146,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * Gets the currently displayed player list footer for this player.
       *
       * @return player list header or null
@@ -969,7 +1018,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      @Nullable
      public String getPlayerListFooter();
  
-@@ -92,14 +157,18 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -92,14 +156,18 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * Sets the currently displayed player list header for this player.
       *
       * @param header player list header, null for empty
@@ -988,7 +1037,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      public void setPlayerListFooter(@Nullable String footer);
  
      /**
-@@ -108,7 +177,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -108,7 +176,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       *
       * @param header player list header, null for empty
       * @param footer player list footer, null for empty
@@ -998,7 +1047,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      public void setPlayerListHeaderFooter(@Nullable String header, @Nullable String footer);
  
      /**
-@@ -146,9 +217,20 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -146,9 +216,20 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * Kicks player with custom kick message.
       *
       * @param message kick message
@@ -1019,7 +1068,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      /**
       * Says a message (or runs a command).
       *
-@@ -437,6 +519,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -448,6 +529,7 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      @Deprecated
      public boolean sendChunkChange(@NotNull Location loc, int sx, int sy, int sz, @NotNull byte[] data);
  
@@ -1027,7 +1076,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      /**
       * Send a sign change. This fakes a sign change packet for a user at
       * a certain location. This will not actually change the world in any way.
-@@ -452,6 +535,43 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -463,6 +545,43 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @throws IllegalArgumentException if location is null
       * @throws IllegalArgumentException if lines is non-null and has a length less than 4
       */
@@ -1071,7 +1120,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      public void sendSignChange(@NotNull Location loc, @Nullable String[] lines) throws IllegalArgumentException;
  
  
-@@ -471,7 +591,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -482,7 +601,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @throws IllegalArgumentException if location is null
       * @throws IllegalArgumentException if dyeColor is null
       * @throws IllegalArgumentException if lines is non-null and has a length less than 4
@@ -1081,7 +1130,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      public void sendSignChange(@NotNull Location loc, @Nullable String[] lines, @NotNull DyeColor dyeColor) throws IllegalArgumentException;
  
      /**
-@@ -1258,6 +1380,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -1269,6 +1390,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       */
      public int getClientViewDistance();
  
@@ -1096,7 +1145,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      /**
       * Gets the player's current locale.
       *
-@@ -1268,8 +1398,10 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -1279,8 +1408,10 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * they wish.
       *
       * @return the player's locale
@@ -1107,7 +1156,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
      public String getLocale();
  
      /**
-@@ -1287,6 +1419,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -1298,6 +1429,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       */
      public void openBook(@NotNull ItemStack book);
  
@@ -1115,14 +1164,14 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
 +    @NotNull
 +    @Override
 +    default net.kyori.adventure.text.event.HoverEvent<net.kyori.adventure.text.event.HoverEvent.ShowEntity> asHoverEvent(final @NotNull java.util.function.UnaryOperator<net.kyori.adventure.text.event.HoverEvent.ShowEntity> op) {
-+        return net.kyori.adventure.text.event.HoverEvent.showEntity(this.getType().getKey(), this.getUniqueId(), this.displayName());
++        return net.kyori.adventure.text.event.HoverEvent.showEntity(op.apply(net.kyori.adventure.text.event.HoverEvent.ShowEntity.of(this.getType().getKey(), this.getUniqueId(), this.displayName())));
 +    }
 +    // Paper end
 +
      // Spigot start
      public class Spigot extends Entity.Spigot {
  
-@@ -1341,11 +1481,13 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -1352,11 +1491,13 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
              throw new UnsupportedOperationException("Not supported yet.");
          }
  
@@ -1136,7 +1185,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
          @Override
          public void sendMessage(@NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
              throw new UnsupportedOperationException("Not supported yet.");
-@@ -1356,7 +1498,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -1367,7 +1508,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
           *
           * @param position the screen position
           * @param component the components to send
@@ -1146,7 +1195,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
          public void sendMessage(@NotNull net.md_5.bungee.api.ChatMessageType position, @NotNull net.md_5.bungee.api.chat.BaseComponent component) {
              throw new UnsupportedOperationException("Not supported yet.");
          }
-@@ -1366,7 +1510,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -1377,7 +1520,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
           *
           * @param position the screen position
           * @param components the components to send
@@ -1156,7 +1205,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
          public void sendMessage(@NotNull net.md_5.bungee.api.ChatMessageType position, @NotNull net.md_5.bungee.api.chat.BaseComponent... components) {
              throw new UnsupportedOperationException("Not supported yet.");
          }
-@@ -1377,7 +1523,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -1388,7 +1533,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
           * @param position the screen position
           * @param sender the sender of the message
           * @param component the components to send
@@ -1166,7 +1215,7 @@ index f22b21ee12496452f7b2125c131f56ecc74d439a..447de8f7c1d871ef5fb1a06bace451e1
          public void sendMessage(@NotNull net.md_5.bungee.api.ChatMessageType position, @Nullable UUID sender, @NotNull net.md_5.bungee.api.chat.BaseComponent component) {
              throw new UnsupportedOperationException("Not supported yet.");
          }
-@@ -1388,7 +1536,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -1399,7 +1546,9 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
           * @param position the screen position
           * @param sender the sender of the message
           * @param components the components to send
@@ -1304,34 +1353,34 @@ index 7190db11eff7d48df8a99f405a9dbaefdfa76e3d..1268066e30ddb0cd3792ea4b3de894eb
  
      @Override
 diff --git a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
-index 07a52441a5cdd7e428a14b286d7cb5210e3efa97..11cc9da9ff23e4c84f203cb0e62a8624bfcf5260 100644
+index 3c2ea8fec3a748cab7f5ad9100d12bd8213ec6c9..7941c60b0e1840785ba2b250071591bd75bc6e35 100644
 --- a/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/PlayerDeathEvent.java
-@@ -11,26 +11,46 @@ import org.jetbrains.annotations.Nullable;
-  */
+@@ -12,25 +12,48 @@ import org.jetbrains.annotations.Nullable;
  public class PlayerDeathEvent extends EntityDeathEvent {
      private int newExp = 0;
--    private String deathMessage = "";
-+    private net.kyori.adventure.text.Component deathMessage; // Paper
+     private String deathMessage = "";
++    private net.kyori.adventure.text.Component adventure$deathMessage; // Paper
      private int newLevel = 0;
      private int newTotalExp = 0;
      private boolean keepLevel = false;
      private boolean keepInventory = false;
 +    // Paper start
-+    public PlayerDeathEvent(@NotNull final Player player, @NotNull final List<ItemStack> drops, final int droppedExp, @Nullable final net.kyori.adventure.text.Component deathMessage) {
-+        this(player, drops, droppedExp, 0, deathMessage);
++    public PlayerDeathEvent(@NotNull final Player player, @NotNull final List<ItemStack> drops, final int droppedExp, @Nullable final net.kyori.adventure.text.Component adventure$deathMessage) {
++        this(player, drops, droppedExp, 0, adventure$deathMessage, null);
 +    }
 +
-+    public PlayerDeathEvent(@NotNull final Player player, @NotNull final List<ItemStack> drops, final int droppedExp, final int newExp, @Nullable final net.kyori.adventure.text.Component deathMessage) {
-+        this(player, drops, droppedExp, newExp, 0, 0, deathMessage);
++    public PlayerDeathEvent(@NotNull final Player player, @NotNull final List<ItemStack> drops, final int droppedExp, final int newExp, @Nullable final net.kyori.adventure.text.Component adventure$deathMessage, @Nullable String deathMessage) {
++        this(player, drops, droppedExp, newExp, 0, 0, adventure$deathMessage, deathMessage);
 +    }
  
-+    public PlayerDeathEvent(@NotNull final Player player, @NotNull final List<ItemStack> drops, final int droppedExp, final int newExp, final int newTotalExp, final int newLevel, @Nullable final net.kyori.adventure.text.Component deathMessage) {
++    public PlayerDeathEvent(@NotNull final Player player, @NotNull final List<ItemStack> drops, final int droppedExp, final int newExp, final int newTotalExp, final int newLevel, @Nullable final net.kyori.adventure.text.Component adventure$deathMessage, @Nullable String deathMessage) {
 +        super(player, drops, droppedExp);
 +        this.newExp = newExp;
 +        this.newTotalExp = newTotalExp;
 +        this.newLevel = newLevel;
 +        this.deathMessage = deathMessage;
++        this.adventure$deathMessage = adventure$deathMessage;
 +    }
 +    // Paper end
 +
@@ -1351,60 +1400,69 @@ index 07a52441a5cdd7e428a14b286d7cb5210e3efa97..11cc9da9ff23e4c84f203cb0e62a8624
          this.newExp = newExp;
          this.newTotalExp = newTotalExp;
          this.newLevel = newLevel;
--        this.deathMessage = deathMessage;
-+        this.deathMessage = deathMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(deathMessage) : net.kyori.adventure.text.Component.empty(); // Paper
+         this.deathMessage = deathMessage;
++        this.adventure$deathMessage = deathMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(deathMessage) : net.kyori.adventure.text.Component.empty(); // Paper
      }
  
      @NotNull
-@@ -39,12 +59,13 @@ public class PlayerDeathEvent extends EntityDeathEvent {
+@@ -39,25 +62,55 @@ public class PlayerDeathEvent extends EntityDeathEvent {
          return (Player) entity;
      }
  
 +    // Paper start
-     /**
-      * Set the death message that will appear to everyone on the server.
-      *
-      * @param deathMessage Message to appear to other players on the server.
-      */
--    public void setDeathMessage(@Nullable String deathMessage) {
-+    public void deathMessage(@Nullable net.kyori.adventure.text.Component deathMessage) {
-         this.deathMessage = deathMessage;
-     }
- 
-@@ -53,9 +74,32 @@ public class PlayerDeathEvent extends EntityDeathEvent {
-      *
-      * @return Message to appear to other players on the server.
-      */
-+    public @Nullable net.kyori.adventure.text.Component deathMessage() {
-+        return this.deathMessage;
-+    }
-+    // Paper end
-+
 +    /**
 +     * Set the death message that will appear to everyone on the server.
 +     *
 +     * @param deathMessage Message to appear to other players on the server.
-+     * @deprecated in favour of {@link #deathMessage(net.kyori.adventure.text.Component)}
 +     */
-+    @Deprecated // Paper
-+    public void setDeathMessage(@Nullable String deathMessage) {
-+        this.deathMessage = deathMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(deathMessage) : net.kyori.adventure.text.Component.empty(); // Paper
++    public void deathMessage(@Nullable net.kyori.adventure.text.Component deathMessage) {
++        this.deathMessage = null;
++        this.adventure$deathMessage = deathMessage;
 +    }
 +
 +    /**
 +     * Get the death message that will appear to everyone on the server.
 +     *
 +     * @return Message to appear to other players on the server.
-+     * @deprecated in favour of {@link #deathMessage()}
 +     */
++    public @Nullable net.kyori.adventure.text.Component deathMessage() {
++        return this.adventure$deathMessage;
++    }
++    // Paper end
++
+     /**
+      * Set the death message that will appear to everyone on the server.
+      *
+      * @param deathMessage Message to appear to other players on the server.
++     * @deprecated in favour of {@link #deathMessage(net.kyori.adventure.text.Component)}
+      */
++    @Deprecated // Paper
+     public void setDeathMessage(@Nullable String deathMessage) {
+         this.deathMessage = deathMessage;
++        this.adventure$deathMessage = deathMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(deathMessage) : net.kyori.adventure.text.Component.empty(); // Paper
+     }
+ 
+     /**
+      * Get the death message that will appear to everyone on the server.
+      *
+      * @return Message to appear to other players on the server.
++     * @deprecated in favour of {@link #deathMessage()}
+      */
      @Nullable
 +    @Deprecated // Paper
      public String getDeathMessage() {
 -        return deathMessage;
-+        return this.deathMessage == null ? null : net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(this.deathMessage); // Paper
++        return this.deathMessage != null ? this.deathMessage : (this.adventure$deathMessage != null ? getDeathMessageString(this.adventure$deathMessage) : null); // Paper
      }
- 
+-
++    // Paper start //TODO: add translation API to drop String deathMessage in favor of just Adventure
++    private static String getDeathMessageString(net.kyori.adventure.text.Component component) {
++        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(component);
++    }
++    // Paper end
      /**
+      * Gets how much EXP the Player should have at respawn.
+      * <p>
 diff --git a/src/main/java/org/bukkit/event/inventory/InventoryType.java b/src/main/java/org/bukkit/event/inventory/InventoryType.java
 index f1e9bc9bc797b7216336d3470e3c696a06f2b21a..090d22bd30f7947103771aaaf09a2398970ac337 100644
 --- a/src/main/java/org/bukkit/event/inventory/InventoryType.java
@@ -1576,7 +1634,7 @@ index c8384da69af61e1970f254a3a9c206ee81d7a989..992d1025ca02020e87a9ab5db83d2494
  
      /**
 diff --git a/src/main/java/org/bukkit/event/player/PlayerJoinEvent.java b/src/main/java/org/bukkit/event/player/PlayerJoinEvent.java
-index d06684aba7688ce06777dbd837a46856a9d7767f..fda3a43f1eac6c660f75a77acb882a9e6753a3f0 100644
+index d06684aba7688ce06777dbd837a46856a9d7767f..4af1d064fcb57773dfa8f6ad40d6482973f8e1a8 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerJoinEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerJoinEvent.java
 @@ -10,30 +10,60 @@ import org.jetbrains.annotations.Nullable;
@@ -1594,7 +1652,7 @@ index d06684aba7688ce06777dbd837a46856a9d7767f..fda3a43f1eac6c660f75a77acb882a9e
 +    @Deprecated // Paper end
      public PlayerJoinEvent(@NotNull final Player playerJoined, @Nullable final String joinMessage) {
          super(playerJoined);
-+        this.joinMessage = joinMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(joinMessage) : net.kyori.adventure.text.Component.empty(); // Paper end
++        this.joinMessage = joinMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(joinMessage) : null; // Paper end
 +    }
 +
 +    // Paper start
@@ -1639,7 +1697,7 @@ index d06684aba7688ce06777dbd837a46856a9d7767f..fda3a43f1eac6c660f75a77acb882a9e
 +    @Deprecated // Paper
      public void setJoinMessage(@Nullable String joinMessage) {
 -        this.joinMessage = joinMessage;
-+        this.joinMessage = joinMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(joinMessage) : net.kyori.adventure.text.Component.empty(); // Paper
++        this.joinMessage = joinMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(joinMessage) : null; // Paper
      }
  
      @NotNull
@@ -2029,7 +2087,7 @@ index fb066251f793ec3b41bfc075b9478901b15ee549..6800132c6288b4588fd02b08d26f016c
  
      /**
 diff --git a/src/main/java/org/bukkit/event/player/PlayerQuitEvent.java b/src/main/java/org/bukkit/event/player/PlayerQuitEvent.java
-index d70c25f404e994766a9ebce89a917c8d0719777c..9b43bb24055b94328c569f7e0df6bd24c8ebfd2b 100644
+index d70c25f404e994766a9ebce89a917c8d0719777c..0395ca85a466f6356259078d3bad48b2ce6e57b7 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerQuitEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerQuitEvent.java
 @@ -10,30 +10,59 @@ import org.jetbrains.annotations.Nullable;
@@ -2042,7 +2100,7 @@ index d70c25f404e994766a9ebce89a917c8d0719777c..9b43bb24055b94328c569f7e0df6bd24
 +    @Deprecated // Paper
      public PlayerQuitEvent(@NotNull final Player who, @Nullable final String quitMessage) {
          super(who);
-+        this.quitMessage = quitMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(quitMessage) : net.kyori.adventure.text.Component.empty(); // Paper
++        this.quitMessage = quitMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(quitMessage) : null; // Paper
 +    }
 +    // Paper start
 +    public PlayerQuitEvent(@NotNull final Player who, @Nullable final net.kyori.adventure.text.Component quitMessage) {
@@ -2091,7 +2149,7 @@ index d70c25f404e994766a9ebce89a917c8d0719777c..9b43bb24055b94328c569f7e0df6bd24
 +    @Deprecated // Paper
      public void setQuitMessage(@Nullable String quitMessage) {
 -        this.quitMessage = quitMessage;
-+        this.quitMessage = quitMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(quitMessage) : net.kyori.adventure.text.Component.empty(); // Paper
++        this.quitMessage = quitMessage != null ? net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(quitMessage) : null; // Paper
      }
  
      @NotNull
@@ -2178,10 +2236,14 @@ index 03bfca9d368bbe4b7c1353d52c883e756bf69bda..943d324435350d3f16fad3e21cb472a0
  
      /**
 diff --git a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
-index 7a2a58bac8e721c3f0c64f69f77be07a51f76d58..f46ea9f2bd4a4d9582428325e725d9220817b254 100644
+index 7a2a58bac8e721c3f0c64f69f77be07a51f76d58..29c5bd1f522310def76bf7b46a5b61463d53ff96 100644
 --- a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
 +++ b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
-@@ -17,15 +17,16 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
+@@ -14,18 +14,20 @@ import org.jetbrains.annotations.NotNull;
+  * checked and removed by {@link #iterator() iterating} over this event.
+  */
+ public class ServerListPingEvent extends ServerEvent implements Iterable<Player> {
++    private static final net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer LEGACY_SECTION_SERIALIZER = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.builder().useUnusualXRepeatedCharacterHexFormat().build(); // Paper
      private static final int MAGIC_PLAYER_COUNT = Integer.MIN_VALUE;
      private static final HandlerList handlers = new HandlerList();
      private final InetAddress address;
@@ -2196,11 +2258,11 @@ index 7a2a58bac8e721c3f0c64f69f77be07a51f76d58..f46ea9f2bd4a4d9582428325e725d922
          Validate.isTrue(numPlayers >= 0, "Cannot have negative number of players online", numPlayers);
          this.address = address;
 -        this.motd = motd;
-+        this.motd = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(motd); // Paper
++        this.motd = LEGACY_SECTION_SERIALIZER.deserialize(motd); // Paper
          this.numPlayers = numPlayers;
          this.maxPlayers = maxPlayers;
      }
-@@ -38,14 +39,58 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
+@@ -38,14 +40,58 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
       * @param address the address of the pinger
       * @param motd the message of the day
       * @param maxPlayers the max number of players
@@ -2211,7 +2273,7 @@ index 7a2a58bac8e721c3f0c64f69f77be07a51f76d58..f46ea9f2bd4a4d9582428325e725d922
 +        super(true);
 +        this.numPlayers = MAGIC_PLAYER_COUNT;
 +        this.address = address;
-+        this.motd = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(motd); // Paper
++        this.motd = LEGACY_SECTION_SERIALIZER.deserialize(motd); // Paper
 +        this.maxPlayers = maxPlayers;
 +    }
 +    // Paper start
@@ -2259,7 +2321,7 @@ index 7a2a58bac8e721c3f0c64f69f77be07a51f76d58..f46ea9f2bd4a4d9582428325e725d922
  
      /**
       * Get the address the ping is coming from.
-@@ -61,19 +106,23 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
+@@ -61,19 +107,23 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
       * Get the message of the day message.
       *
       * @return the message of the day
@@ -2269,7 +2331,7 @@ index 7a2a58bac8e721c3f0c64f69f77be07a51f76d58..f46ea9f2bd4a4d9582428325e725d922
 +    @Deprecated // Paper
      public String getMotd() {
 -        return motd;
-+        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(this.motd); // Paper
++        return LEGACY_SECTION_SERIALIZER.serialize(this.motd); // Paper
      }
  
      /**
@@ -2281,15 +2343,15 @@ index 7a2a58bac8e721c3f0c64f69f77be07a51f76d58..f46ea9f2bd4a4d9582428325e725d922
 +    @Deprecated // Paper
      public void setMotd(@NotNull String motd) {
 -        this.motd = motd;
-+        this.motd = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(motd); // Paper
++        this.motd = LEGACY_SECTION_SERIALIZER.deserialize(motd); // Paper
      }
  
      /**
 diff --git a/src/main/java/org/bukkit/inventory/InventoryView.java b/src/main/java/org/bukkit/inventory/InventoryView.java
-index 14346d83bc99581b18e53d19af03708c0bf22cf7..b6cbf23dd40fb1cb1fec3c7d6918438ebf5bcc2e 100644
+index 14346d83bc99581b18e53d19af03708c0bf22cf7..a4e3d526db2d17dc923cbe82e53d3c902d61e1f3 100644
 --- a/src/main/java/org/bukkit/inventory/InventoryView.java
 +++ b/src/main/java/org/bukkit/inventory/InventoryView.java
-@@ -446,11 +446,23 @@ public abstract class InventoryView {
+@@ -446,11 +446,25 @@ public abstract class InventoryView {
          return getPlayer().setWindowProperty(prop, value);
      }
  
@@ -2300,7 +2362,9 @@ index 14346d83bc99581b18e53d19af03708c0bf22cf7..b6cbf23dd40fb1cb1fec3c7d6918438e
       * @return The title.
       */
      @NotNull
-+    public abstract net.kyori.adventure.text.Component title();
++    public /*abstract*/ net.kyori.adventure.text.Component title() {
++        return net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(this.getTitle());
++    }
 +    // Paper end
 +
 +    /**

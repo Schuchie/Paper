@@ -61,10 +61,10 @@ index 0000000000000000000000000000000000000000..5caca6439d2135e34880d501397fe2ea
 +
 +}
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index 4de8646811f25b6217cffcd31fc14bcf79151b1a..6d9080abb63a6d13d1184ff6949ba86a470ea390 100644
+index bad5d4f165d1e469ed583b036f78e467b94691fd..89a83253c99c387e1c91c434952c549d598b11aa 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
-@@ -133,6 +133,10 @@ public class HandshakeListener implements PacketHandshakingInListener {
+@@ -134,6 +134,10 @@ public class HandshakeListener implements PacketHandshakingInListener {
                  throw new UnsupportedOperationException("Invalid intention " + packethandshakinginsetprotocol.b());
          }
  
@@ -103,10 +103,10 @@ index 4f008e4723d2cb0bcabb2d5621203d63c40c4923..8545146fb1f093f821e3b966d9337049
          return this.a;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 82c99fbab334e16c39ac23ca3765f9543e8d147a..80fd6bf4c36738cfa3c5f202760908bb35499efe 100644
+index ee2334e5cd2bb141131b5fe7e585da7c1107324e..69606cf1ac2c8419801af692c19d55d3d56bc0a8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -187,6 +187,20 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -188,6 +188,20 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
      }
  

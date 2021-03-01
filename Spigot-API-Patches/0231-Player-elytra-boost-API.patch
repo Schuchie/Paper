@@ -5,10 +5,10 @@ Subject: [PATCH] Player elytra boost API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 00f78c26686ff18494abf9ebc173fbb3df5677b3..41a6fc2d405225fe85aa014148e0d3519f48861a 100644
+index 11f0bca3cbc9eac6afb33c2a387ee2f6e2186402..46eb684a23b1b8321a91f1e70b8196706aebd9bc 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -1940,6 +1940,19 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -1950,6 +1950,19 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       */
      @NotNull
      <T> T getClientOption(@NotNull ClientOption<T> option);
