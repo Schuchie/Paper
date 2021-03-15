@@ -32,33 +32,36 @@ https://bugs.mojang.com/browse/MC-141484?focusedCommentId=528273&page=com.atlass
 https://bugs.mojang.com/browse/MC-141484?focusedCommentId=528577&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-528577
 
 diff --git a/src/main/java/com/destroystokyo/paper/PaperCommand.java b/src/main/java/com/destroystokyo/paper/PaperCommand.java
-index f0a836db74ad3e20778d3863223bc9a35ff4ad41..e4719a5e7e5ebd91257a9c9b83fa1adad70fd585 100644
+index aa606e66c874d5147074b85cc9a5ceef71175740..7dfed07e54f1f0be0c01ee161f56dc421b91baaa 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperCommand.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperCommand.java
-@@ -28,14 +28,14 @@ public class PaperCommand extends Command {
+@@ -10,8 +10,10 @@ import net.minecraft.server.ChunkCoordIntPair;
+ import net.minecraft.server.ChunkProviderServer;
+ import net.minecraft.server.Entity;
+ import net.minecraft.server.EntityTypes;
++import net.minecraft.server.MCUtil;
+ import net.minecraft.server.MinecraftKey;
+ import net.minecraft.server.MinecraftServer;
++import net.minecraft.server.PlayerChunk;
+ import net.minecraft.server.WorldServer;
+ import org.apache.commons.lang3.tuple.MutablePair;
+ import org.apache.commons.lang3.tuple.Pair;
+@@ -41,7 +43,7 @@ import java.util.stream.Collectors;
+ 
+ public class PaperCommand extends Command {
+     private static final String BASE_PERM = "bukkit.command.paper.";
+-    private static final ImmutableSet<String> SUBCOMMANDS = ImmutableSet.<String>builder().add("heap", "entity", "reload", "version").build();
++    private static final ImmutableSet<String> SUBCOMMANDS = ImmutableSet.<String>builder().add("heap", "entity", "reload", "version", "debug", "chunkinfo").build();
+ 
      public PaperCommand(String name) {
          super(name);
-         this.description = "Paper related commands";
--        this.usageMessage = "/paper [heap | entity | reload | version]";
-+        this.usageMessage = "/paper [heap | entity | reload | version | debug | chunkinfo]";
-         this.setPermission("bukkit.command.paper");
-     }
- 
-     @Override
-     public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) throws IllegalArgumentException {
-         if (args.length <= 1)
--            return getListMatchingLast(args, "heap", "entity", "reload", "version");
-+            return getListMatchingLast(args, "heap", "entity", "reload", "version", "debug", "chunkinfo");
- 
-         switch (args[0].toLowerCase(Locale.ENGLISH))
-         {
-@@ -45,6 +45,21 @@ public class PaperCommand extends Command {
+@@ -69,6 +71,21 @@ public class PaperCommand extends Command {
                  if (args.length == 3)
-                     return getListMatchingLast(args, EntityTypes.getEntityNameList().stream().map(MinecraftKey::toString).sorted().toArray(String[]::new));
+                     return getListMatchingLast(sender, args, EntityTypes.getEntityNameList().stream().map(MinecraftKey::toString).sorted().toArray(String[]::new));
                  break;
 +            case "debug":
 +                if (args.length == 2) {
-+                    return getListMatchingLast(args, "help", "chunks");
++                    return getListMatchingLast(sender, args, "help", "chunks");
 +                }
 +                break;
 +            case "chunkinfo":
@@ -68,13 +71,13 @@ index f0a836db74ad3e20778d3863223bc9a35ff4ad41..e4719a5e7e5ebd91257a9c9b83fa1ada
 +                    worldNames.add(world.getName());
 +                }
 +                if (args.length == 2) {
-+                    return getListMatchingLast(args, worldNames);
++                    return getListMatchingLast(sender, args, worldNames);
 +                }
 +                break;
          }
          return Collections.emptyList();
      }
-@@ -109,6 +124,12 @@ public class PaperCommand extends Command {
+@@ -135,6 +152,12 @@ public class PaperCommand extends Command {
              case "reload":
                  doReload(sender);
                  break;
@@ -85,9 +88,9 @@ index f0a836db74ad3e20778d3863223bc9a35ff4ad41..e4719a5e7e5ebd91257a9c9b83fa1ada
 +                doChunkInfo(sender, args);
 +                break;
              case "ver":
+                 if (!testPermission(sender, "version")) break; // "ver" needs a special check because it's an alias. All other commands are checked up before the switch statement (because they are present in the SUBCOMMANDS set)
              case "version":
-                 Command ver = org.bukkit.Bukkit.getServer().getCommandMap().getCommand("version");
-@@ -125,6 +146,114 @@ public class PaperCommand extends Command {
+@@ -152,6 +175,114 @@ public class PaperCommand extends Command {
          return true;
      }
  
@@ -203,7 +206,7 @@ index f0a836db74ad3e20778d3863223bc9a35ff4ad41..e4719a5e7e5ebd91257a9c9b83fa1ada
       * Ported from MinecraftForge - author: LexManos <LexManos@gmail.com> - License: LGPLv2.1
       */
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index b6ec5d0f281bac483f210fd8c45a8965cd97cc02..534bcc215b0efb8561f7489f01fe49d34cba4c4f 100644
+index 8017953af1df6c046a47ebe655e5d1afa68d50f8..af597b8b3157ac76456f8575a8f85a48fb0f45cd 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
 @@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
@@ -417,7 +420,7 @@ index 816d55b17ea531bc2f25b92c003b127fe6e04112..2507bdf7bfa65f1bc728a46322d2a570
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/PlayerChunk.java b/src/main/java/net/minecraft/server/PlayerChunk.java
-index f6b83ced48aa649bbd58a9b8a8dfe460b961bc22..2c73bc1151d5d87ce6eac3f778ebff9c555b0212 100644
+index eefd94ef237657625f2e7b19099d802e7680b50a..b7af53dbf3139d7d51069e11388b945785cb47f6 100644
 --- a/src/main/java/net/minecraft/server/PlayerChunk.java
 +++ b/src/main/java/net/minecraft/server/PlayerChunk.java
 @@ -29,7 +29,7 @@ public class PlayerChunk {
@@ -430,10 +433,10 @@ index f6b83ced48aa649bbd58a9b8a8dfe460b961bc22..2c73bc1151d5d87ce6eac3f778ebff9c
      private final ShortSet[] dirtyBlocks;
      private int r;
 diff --git a/src/main/java/net/minecraft/server/PlayerChunkMap.java b/src/main/java/net/minecraft/server/PlayerChunkMap.java
-index 2db0f3e060850ae65033f878ed46b678686a03f9..2e41af4f945f942c9a8f4b29464522ae07b12982 100644
+index 8370bb32f9ca5c88cea52b90a6f361ad5333bbb2..21c261e3cb4d82e358a8e5c1151f59e68b483fd5 100644
 --- a/src/main/java/net/minecraft/server/PlayerChunkMap.java
 +++ b/src/main/java/net/minecraft/server/PlayerChunkMap.java
-@@ -59,7 +59,7 @@ public class PlayerChunkMap extends IChunkLoader implements PlayerChunk.d {
+@@ -60,7 +60,7 @@ public class PlayerChunkMap extends IChunkLoader implements PlayerChunk.d {
      public final Long2ObjectLinkedOpenHashMap<PlayerChunk> updatingChunks = new Long2ObjectLinkedOpenHashMap();
      public volatile Long2ObjectLinkedOpenHashMap<PlayerChunk> visibleChunks;
      private final Long2ObjectLinkedOpenHashMap<PlayerChunk> pendingUnload;
