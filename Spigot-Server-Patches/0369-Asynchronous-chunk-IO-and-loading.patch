@@ -2348,10 +2348,10 @@ index 191a74bd9b894f9d64d0a55747cb17e07ceef597..1732fc552c290d294b68d6f92f2a58d9
                  DedicatedServer dedicatedserver1 = new DedicatedServer(optionset, datapackconfiguration1, thread, iregistrycustom_dimension, convertable_conversionsession, resourcepackrepository, datapackresources, null, dedicatedserversettings, DataConverterRegistry.a(), minecraftsessionservice, gameprofilerepository, usercache, WorldLoadListenerLogger::new);
  
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 78fc9046c64f612dfc56431ce6ea0e1cc7d66f15..d2b81e14f8f58f5746a5577e23357d26f22e74fe 100644
+index 4da16809f8f084fc4af4c50b5232914ea8aee04e..74c4462bc32e966055732944dfb931e75d7fad1f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -911,7 +911,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
+@@ -921,7 +921,7 @@ public abstract class MinecraftServer extends IAsyncTaskHandlerReentrant<TickTas
              this.getUserCache().b(false); // Paper
          }
          // Spigot end
@@ -3192,10 +3192,10 @@ index 1b05d2394244d85a63ecd8336f7dd1d05f4fdffe..a68be9b72daca6353d51141a8771e002
      }
      public void removeTicketsForSpawn(int radiusInBlocks, BlockPosition spawn) {
 diff --git a/src/main/java/net/minecraft/server/network/PlayerConnection.java b/src/main/java/net/minecraft/server/network/PlayerConnection.java
-index eff63b82e69eef6921a6dc09e86cd045e7e2febb..97429dc047f8907fbbd1ba16a6d4721518433b02 100644
+index d84d87b0dd01b4d67e55f1b445928285c45a08ca..fa0b7edf42243d53d9dc897903b9b9e902b33cf7 100644
 --- a/src/main/java/net/minecraft/server/network/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/network/PlayerConnection.java
-@@ -728,6 +728,13 @@ public class PlayerConnection implements PacketListenerPlayIn {
+@@ -730,6 +730,13 @@ public class PlayerConnection implements PacketListenerPlayIn {
              minecraftServer.scheduleOnMain(() -> this.disconnect(new ChatMessage("disconnect.spam", new Object[0]))); // Paper
              return;
          }
@@ -4060,7 +4060,7 @@ index 8ad97a8a2189553da88810380b1c240079eacc93..d3b9a9e4695655860c72db5f21884726
 +    // Paper end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 2855dbefac9308c043da85d7ddba2fd741a1fbe0..91b8e555f54e60f3839ef3d523bf7d2aef6c253b 100644
+index daa5c52a690ce33d2b2cd32c4fbaa147f25dd144..e880ce299bd81ad790da7b94fb28c49a5ebab1e7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -563,22 +563,23 @@ public class CraftWorld implements World {
@@ -4095,7 +4095,7 @@ index 2855dbefac9308c043da85d7ddba2fd741a1fbe0..91b8e555f54e60f3839ef3d523bf7d2a
  
              // fall through to load
              // we do this so we do not re-read the chunk data on disk
-@@ -2508,6 +2509,34 @@ public class CraftWorld implements World {
+@@ -2501,6 +2502,34 @@ public class CraftWorld implements World {
      public DragonBattle getEnderDragonBattle() {
          return (getHandle().getDragonBattle() == null) ? null : new CraftDragonBattle(getHandle().getDragonBattle());
      }
