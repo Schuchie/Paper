@@ -6,7 +6,7 @@ Subject: [PATCH] Fix anchor respawn acting as a bed respawn from the end
 
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 2df8e914f66176e22aeddf8b94a83af5ea921d88..f8f0212497ad4fbb1273820a06a4ae6721053b8e 100644
+index b257d58a298e82f255b09e9575ee42a56a4b7cee..a83d8cfac8c5ed84dd5224cc3f18f55dba4741af 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -871,6 +871,7 @@ public abstract class PlayerList {

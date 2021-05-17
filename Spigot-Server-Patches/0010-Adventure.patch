@@ -448,7 +448,7 @@ index 0000000000000000000000000000000000000000..caa9708f321f04cd02534161231c0599
 +}
 diff --git a/src/main/java/io/papermc/paper/adventure/PaperAdventure.java b/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..cd2da276c09dcf98c1c50dc66aa30dd3b67b43af
+index 0000000000000000000000000000000000000000..c60457e9240c33a4721b82a00cef081fb320c8a7
 --- /dev/null
 +++ b/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
 @@ -0,0 +1,344 @@
@@ -513,7 +513,7 @@ index 0000000000000000000000000000000000000000..cd2da276c09dcf98c1c50dc66aa30dd3
 +                // calculate argument position
 +                if (argIdx != null) {
 +                    try {
-+                        final int idx = Integer.parseInt(argIdx);
++                        final int idx = Integer.parseInt(argIdx) - 1;
 +                        if (idx < args.size()) {
 +                            consumer.accept(args.get(idx));
 +                        }
@@ -1145,7 +1145,7 @@ index 9c44a3d9273afaf4d35f4ff86727386b34d9eb06..fff22c40ba38575951e8e4821ade22b2
          }
  
 diff --git a/src/main/java/net/minecraft/server/level/EntityPlayer.java b/src/main/java/net/minecraft/server/level/EntityPlayer.java
-index e818bf022b74cae34a512d8c98b47ec3e5c74b9a..bb309790dc90aedabb3c48ea21cd87d1819d2261 100644
+index 3fa2e077912949f6ca7b14da93c2206215ebcc7e..5ef8b66cf266488df75ce7399596f75273b90761 100644
 --- a/src/main/java/net/minecraft/server/level/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/EntityPlayer.java
 @@ -143,6 +143,7 @@ import net.minecraft.world.item.enchantment.EnchantmentManager;
@@ -1156,7 +1156,7 @@ index e818bf022b74cae34a512d8c98b47ec3e5c74b9a..bb309790dc90aedabb3c48ea21cd87d1
  import org.bukkit.Bukkit;
  import org.bukkit.GameMode;
  import org.bukkit.Location;
-@@ -211,6 +212,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -212,6 +213,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
      // CraftBukkit start
      public String displayName;
@@ -1164,7 +1164,7 @@ index e818bf022b74cae34a512d8c98b47ec3e5c74b9a..bb309790dc90aedabb3c48ea21cd87d1
      public IChatBaseComponent listName;
      public org.bukkit.Location compassTarget;
      public int newExp = 0;
-@@ -241,6 +243,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -242,6 +244,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
          // CraftBukkit start
          this.displayName = this.getName();
@@ -1172,7 +1172,7 @@ index e818bf022b74cae34a512d8c98b47ec3e5c74b9a..bb309790dc90aedabb3c48ea21cd87d1
          this.canPickUpLoot = true;
          this.maxHealthCache = this.getMaxHealth();
      }
-@@ -694,23 +697,17 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -695,23 +698,17 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
          IChatBaseComponent defaultMessage = this.getCombatTracker().getDeathMessage();
  
@@ -1200,7 +1200,7 @@ index e818bf022b74cae34a512d8c98b47ec3e5c74b9a..bb309790dc90aedabb3c48ea21cd87d1
  
              this.playerConnection.a((Packet) (new PacketPlayOutCombatEvent(this.getCombatTracker(), PacketPlayOutCombatEvent.EnumCombatEventType.ENTITY_DIED, ichatbasecomponent)), (future) -> {
                  if (!future.isSuccess()) {
-@@ -1660,6 +1657,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1669,6 +1666,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          this.a(ichatbasecomponent, ChatMessageType.SYSTEM, uuid);
      }
  
@@ -1208,7 +1208,7 @@ index e818bf022b74cae34a512d8c98b47ec3e5c74b9a..bb309790dc90aedabb3c48ea21cd87d1
      public void a(IChatBaseComponent ichatbasecomponent, ChatMessageType chatmessagetype, UUID uuid) {
          this.playerConnection.a((Packet) (new PacketPlayOutChat(ichatbasecomponent, chatmessagetype, uuid)), (future) -> {
              if (!future.isSuccess() && (chatmessagetype == ChatMessageType.GAME_INFO || chatmessagetype == ChatMessageType.SYSTEM)) {
-@@ -1682,6 +1680,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1691,6 +1689,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      }
  
      public String locale = "en_us"; // CraftBukkit - add, lowercase
@@ -1216,7 +1216,7 @@ index e818bf022b74cae34a512d8c98b47ec3e5c74b9a..bb309790dc90aedabb3c48ea21cd87d1
      public void a(PacketPlayInSettings packetplayinsettings) {
          // CraftBukkit start
          if (getMainHand() != packetplayinsettings.getMainHand()) {
-@@ -1693,6 +1692,10 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1702,6 +1701,10 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
              this.server.server.getPluginManager().callEvent(event);
          }
          this.locale = packetplayinsettings.locale;
@@ -1394,7 +1394,7 @@ index 4ed497ee04d9e9116e1f7d90bf975aeadd24aa93..a39f58e0c60b5e3ccc3b725f1f4167d5
               }
              // CraftBukkit end
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index c601a5c577e438a3fa8dd4c5f36dbe9494b03d52..15418868c2b92498139e66d913ee1c35b3abf0cf 100644
+index c601a5c577e438a3fa8dd4c5f36dbe9494b03d52..6ebd4ec781aa215c2b941261250c15c87c223cab 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -8,6 +8,7 @@ import com.mojang.authlib.GameProfile;
@@ -1513,7 +1513,7 @@ index c601a5c577e438a3fa8dd4c5f36dbe9494b03d52..15418868c2b92498139e66d913ee1c35
          // CraftBukkit start - disconnect safely
          for (EntityPlayer player : this.players) {
 -            player.playerConnection.disconnect(this.server.server.getShutdownMessage()); // CraftBukkit - add custom shutdown message
-+            player.playerConnection.disconnect(PaperAdventure.asVanilla(this.server.server.shutdownMessage())); // CraftBukkit - add custom shutdown message // Paper - Adventure
++            player.playerConnection.disconnect(this.server.server.shutdownMessage()); // CraftBukkit - add custom shutdown message // Paper - Adventure
          }
          // CraftBukkit end
  
@@ -1612,6 +1612,18 @@ index f9154b306379c45f15fe55406aaa00351b0471e8..1fb9fea7683075f427edfa411c7747d6
          return this.g;
      }
  
+diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
+index 4010152dccc93019f2e7f284d80b92bae0d91c34..f1a780768e3f4bdb43a7ca6d7850befefb71bf57 100644
+--- a/src/main/java/net/minecraft/world/item/ItemStack.java
++++ b/src/main/java/net/minecraft/world/item/ItemStack.java
+@@ -867,6 +867,7 @@ public final class ItemStack {
+     }
+     // CraftBukkit end
+ 
++    public IChatBaseComponent displayName() { return this.C(); } // Paper - OBFHELPER
+     public IChatBaseComponent C() {
+         IChatMutableComponent ichatmutablecomponent = (new ChatComponentText("")).addSibling(this.getName());
+ 
 diff --git a/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java b/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java
 index 0134bbda9e6fc900b7eefa05442e25539bab3431..b76ef55145336cc8dc4857b79767f5a738ad5144 100644
 --- a/src/main/java/net/minecraft/world/item/enchantment/Enchantment.java
@@ -1646,7 +1658,7 @@ index 7ec93ddd7e7c9dc54e3e4dcfe0d1654c0b0a8536..3f057f0bd23bc1c693c8f04ee8acd662
              }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 6d68610d8ffdef4357cf61ac2f4cf6bf54157b15..2f6b49e3ae7a7407eaec9810af8bf72e3a4896de 100644
+index ce68a6cf845af640e03819c44860590655f74cb1..cb470baa3533e4502c13982ef4e03041fac91ce5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -563,8 +563,11 @@ public final class CraftServer implements Server {
@@ -1662,7 +1674,7 @@ index 6d68610d8ffdef4357cf61ac2f4cf6bf54157b15..2f6b49e3ae7a7407eaec9810af8bf72e
      }
  
      public Player getPlayer(final EntityPlayer entity) {
-@@ -1302,7 +1305,15 @@ public final class CraftServer implements Server {
+@@ -1310,7 +1313,15 @@ public final class CraftServer implements Server {
          return configuration.getInt("settings.spawn-radius", -1);
      }
  
@@ -1678,7 +1690,7 @@ index 6d68610d8ffdef4357cf61ac2f4cf6bf54157b15..2f6b49e3ae7a7407eaec9810af8bf72e
      public String getShutdownMessage() {
          return configuration.getString("settings.shutdown-message");
      }
-@@ -1418,7 +1429,15 @@ public final class CraftServer implements Server {
+@@ -1426,7 +1437,15 @@ public final class CraftServer implements Server {
      }
  
      @Override
@@ -1694,7 +1706,7 @@ index 6d68610d8ffdef4357cf61ac2f4cf6bf54157b15..2f6b49e3ae7a7407eaec9810af8bf72e
          Set<CommandSender> recipients = new HashSet<>();
          for (Permissible permissible : getPluginManager().getPermissionSubscriptions(permission)) {
              if (permissible instanceof CommandSender && permissible.hasPermission(permission)) {
-@@ -1426,14 +1445,14 @@ public final class CraftServer implements Server {
+@@ -1434,14 +1453,14 @@ public final class CraftServer implements Server {
              }
          }
  
@@ -1711,7 +1723,7 @@ index 6d68610d8ffdef4357cf61ac2f4cf6bf54157b15..2f6b49e3ae7a7407eaec9810af8bf72e
  
          for (CommandSender recipient : recipients) {
              recipient.sendMessage(message);
-@@ -1659,6 +1678,14 @@ public final class CraftServer implements Server {
+@@ -1667,6 +1686,14 @@ public final class CraftServer implements Server {
          return CraftInventoryCreator.INSTANCE.createInventory(owner, type);
      }
  
@@ -1726,7 +1738,7 @@ index 6d68610d8ffdef4357cf61ac2f4cf6bf54157b15..2f6b49e3ae7a7407eaec9810af8bf72e
      @Override
      public Inventory createInventory(InventoryHolder owner, InventoryType type, String title) {
          Validate.isTrue(type.isCreatable(), "Cannot open an inventory of type ", type);
-@@ -1671,13 +1698,28 @@ public final class CraftServer implements Server {
+@@ -1679,13 +1706,28 @@ public final class CraftServer implements Server {
          return CraftInventoryCreator.INSTANCE.createInventory(owner, size);
      }
  
@@ -1755,7 +1767,7 @@ index 6d68610d8ffdef4357cf61ac2f4cf6bf54157b15..2f6b49e3ae7a7407eaec9810af8bf72e
      public Merchant createMerchant(String title) {
          return new CraftMerchantCustom(title == null ? InventoryType.MERCHANT.getDefaultTitle() : title);
      }
-@@ -1721,6 +1763,12 @@ public final class CraftServer implements Server {
+@@ -1729,6 +1771,12 @@ public final class CraftServer implements Server {
          return Thread.currentThread().equals(console.serverThread) || console.hasStopped() || !org.spigotmc.AsyncCatcher.enabled; // All bets are off if we have shut down (e.g. due to watchdog)
      }
  
@@ -1768,7 +1780,7 @@ index 6d68610d8ffdef4357cf61ac2f4cf6bf54157b15..2f6b49e3ae7a7407eaec9810af8bf72e
      @Override
      public String getMotd() {
          return console.getMotd();
-@@ -2149,5 +2197,15 @@ public final class CraftServer implements Server {
+@@ -2157,5 +2205,15 @@ public final class CraftServer implements Server {
              return null;
          }
      }
@@ -1784,6 +1796,23 @@ index 6d68610d8ffdef4357cf61ac2f4cf6bf54157b15..2f6b49e3ae7a7407eaec9810af8bf72e
 +    }
      // Paper end
  }
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 3b48799d084f14722f815cb35cbd48b618380fca..cf6d350e6afc46bb58678192fe0b24b7d923412e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -19,6 +19,12 @@ public class Main {
+     public static boolean useConsole = true;
+ 
+     public static void main(String[] args) {
++        // Paper start
++        final String warnWhenLegacyFormattingDetected = String.join(".", "net", "kyori", "adventure", "text", "warnWhenLegacyFormattingDetected");
++        if (false && System.getProperty(warnWhenLegacyFormattingDetected) == null) {
++            System.setProperty(warnWhenLegacyFormattingDetected, String.valueOf(true));
++        }
++        // Paper end
+         // Todo: Installation script
+         OptionParser parser = new OptionParser() {
+             {
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBeacon.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBeacon.java
 index ae735836accc6bf6f0831f72ff882720b69df792..d3ae5cadd88f9012203d2c04cbe38af9b215ef0b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBeacon.java
@@ -2066,7 +2095,7 @@ index 3a4e2261d0b0cd17df3f96e75f3c509156679c48..105d0388998d1e35e634d2163fe1a44a
          player.activeContainer.addSlotListener(player);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index b51a874e4665f977a154792e6216e03e04525f39..fd1fd9bfee34b88864187d9004eb9d6cb968dec5 100644
+index b51a874e4665f977a154792e6216e03e04525f39..6ab14bccb1fcd108931bf7ec331e60f652e0b42d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -240,14 +240,39 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -2164,7 +2193,7 @@ index b51a874e4665f977a154792e6216e03e04525f39..fd1fd9bfee34b88864187d9004eb9d6c
          getHandle().playerConnection.sendPacket(packet);
      }
  
-@@ -335,6 +360,19 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -335,6 +360,17 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          getHandle().playerConnection.disconnect(message == null ? "" : message);
      }
  
@@ -2174,9 +2203,7 @@ index b51a874e4665f977a154792e6216e03e04525f39..fd1fd9bfee34b88864187d9004eb9d6c
 +        org.spigotmc.AsyncCatcher.catchOp("player kick");
 +        final PlayerConnection connection = this.getHandle().playerConnection;
 +        if (connection != null) {
-+            connection.disconnect(io.papermc.paper.adventure.PaperAdventure.asVanilla(
-+                message == null ? net.kyori.adventure.text.Component.empty() : message
-+            ));
++            connection.disconnect(message == null ? net.kyori.adventure.text.Component.empty() : message);
 +        }
 +    }
 +    // Paper end
@@ -2184,7 +2211,7 @@ index b51a874e4665f977a154792e6216e03e04525f39..fd1fd9bfee34b88864187d9004eb9d6c
      @Override
      public void setCompassTarget(Location loc) {
          if (getHandle().playerConnection == null) return;
-@@ -561,6 +599,37 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -561,6 +597,37 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          getHandle().playerConnection.sendPacket(packet);
      }
  
@@ -2222,7 +2249,7 @@ index b51a874e4665f977a154792e6216e03e04525f39..fd1fd9bfee34b88864187d9004eb9d6c
      @Override
      public void sendSignChange(Location loc, String[] lines) {
         sendSignChange(loc, lines, DyeColor.BLACK);
-@@ -583,12 +652,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -583,12 +650,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
  
          IChatBaseComponent[] components = CraftSign.sanitizeLines(lines);
@@ -2238,7 +2265,7 @@ index b51a874e4665f977a154792e6216e03e04525f39..fd1fd9bfee34b88864187d9004eb9d6c
      }
  
      @Override
-@@ -1688,6 +1758,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1688,6 +1756,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return (getHandle().clientViewDistance == null) ? Bukkit.getViewDistance() : getHandle().clientViewDistance;
      }
  
@@ -2251,7 +2278,7 @@ index b51a874e4665f977a154792e6216e03e04525f39..fd1fd9bfee34b88864187d9004eb9d6c
      @Override
      public int getPing() {
          return getHandle().ping;
-@@ -1716,6 +1792,138 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1716,6 +1790,138 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          getInventory().setItemInMainHand(hand);
      }
  
@@ -2588,10 +2615,10 @@ index 04073ed45f8068d80e58d3927b5ebc3160c6a8c6..9949bb8cac73b2f1f02b51079c0e244f
      public String getTitle() {
          return CraftChatMessage.fromComponent(container.getTitle());
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
-index 89a3617068421bb86baf4e8bfd9df2d0626adff7..6d320bbe0c75cc0df504faacf0f7d24804b90d5f 100644
+index 89a3617068421bb86baf4e8bfd9df2d0626adff7..ccd27aa93b4ab1dc09a8d684b43b5ecb69100ed8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
-@@ -334,4 +334,12 @@ public final class CraftItemFactory implements ItemFactory {
+@@ -334,4 +334,17 @@ public final class CraftItemFactory implements ItemFactory {
      public Material updateMaterial(ItemMeta meta, Material material) throws IllegalArgumentException {
          return ((CraftMetaItem) meta).updateMaterial(material);
      }
@@ -2601,6 +2628,11 @@ index 89a3617068421bb86baf4e8bfd9df2d0626adff7..6d320bbe0c75cc0df504faacf0f7d248
 +    public net.kyori.adventure.text.event.HoverEvent<net.kyori.adventure.text.event.HoverEvent.ShowItem> asHoverEvent(final ItemStack item, final java.util.function.UnaryOperator<net.kyori.adventure.text.event.HoverEvent.ShowItem> op) {
 +        final net.minecraft.nbt.NBTTagCompound tag = CraftItemStack.asNMSCopy(item).getTag();
 +        return net.kyori.adventure.text.event.HoverEvent.showItem(op.apply(net.kyori.adventure.text.event.HoverEvent.ShowItem.of(item.getType().getKey(), item.getAmount(), io.papermc.paper.adventure.PaperAdventure.asBinaryTagHolder(tag))));
++    }
++
++    @Override
++    public net.kyori.adventure.text.@org.jetbrains.annotations.NotNull Component displayName(@org.jetbrains.annotations.NotNull ItemStack itemStack) {
++        return io.papermc.paper.adventure.PaperAdventure.asAdventure(CraftItemStack.asNMSCopy(itemStack).displayName());
 +    }
 +    // Paper end
  }
